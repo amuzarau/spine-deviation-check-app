@@ -1,43 +1,79 @@
-import os
 import requests
 import streamlit as st
 
-# -------------------------------------------------
+# ==================================
 # CONFIG
-# -------------------------------------------------
+# ==================================
+BACKEND_URL = "http://localhost:8000"  # поменять при деплое
+
 st.set_page_config(
-    page_title="Spine Deviation Check App",
+    page_title="Проверка формы позвоночника",
     layout="centered",
 )
 
-API_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
-
-# -------------------------------------------------
-# AUTH — ANONYMOUS USER (STEP 6.4)
-# -------------------------------------------------
-if "user_id" not in st.session_state:
-    res = requests.post(f"{API_URL}/auth/anonymous", params={"role": "parent"})
-    if res.status_code != 200:
-        st.error("Ошибка инициализации пользователя")
-        st.stop()
-
-    data = res.json()
-    st.session_state["user_id"] = data["user_id"]
-    st.session_state["role"] = data["role"]
-
-# -------------------------------------------------
-# HEADER
-# -------------------------------------------------
-st.title("🧍 Приложение для предварительной проверки формы позвоночника")
+st.title("🧍 Проверка формы позвоночника")
 
 st.info(
-    "⚠️ Данный инструмент предоставляет только предварительную оценку состояния осанки "
-    "и не является медицинским диагнозом."
+    "⚠️ Инструмент предоставляет предварительную оценку и "
+    "не является медицинским диагнозом."
 )
 
-# -------------------------------------------------
-# PHOTO UPLOAD
-# -------------------------------------------------
+# ==================================
+# SESSION STATE
+# ==================================
+st.session_state.setdefault("logged_in", False)
+st.session_state.setdefault("user_id", None)
+st.session_state.setdefault("email", None)
+st.session_state.setdefault("role", "parent")
+
+# ==================================
+# LOGIN (EMAIL ONLY)
+# ==================================
+if not st.session_state.logged_in:
+    st.subheader("🔐 Вход")
+
+    email = st.text_input(
+        "Email",
+        placeholder="parent@example.com",
+    )
+
+    if st.button("Войти"):
+        if not email:
+            st.warning("Введите email")
+        else:
+            try:
+                res = requests.post(
+                    f"{BACKEND_URL}/auth/anonymous",
+                    json={"email": email},
+                    timeout=10,
+                )
+
+                if res.status_code == 200:
+                    data = res.json()
+                    st.session_state.logged_in = True
+                    st.session_state.user_id = data["user_id"]
+                    st.session_state.email = email
+                    st.session_state.role = data.get("role", "parent")
+                    st.rerun()
+                else:
+                    st.error("Ошибка входа")
+                    st.code(res.text)
+
+            except Exception as e:
+                st.error(f"Ошибка соединения: {e}")
+
+    st.stop()
+
+# ==================================
+# AUTH OK
+# ==================================
+st.success(f"✅ Вы вошли как: {st.session_state.email}")
+
+# ==================================
+# UPLOAD PHOTOS
+# ==================================
+st.subheader("📸 Загрузка фотографий")
+
 back_photo = st.file_uploader(
     "Фото со спины (обязательно)",
     type=["jpg", "jpeg", "png"],
@@ -48,92 +84,95 @@ side_photo = st.file_uploader(
     type=["jpg", "jpeg", "png"],
 )
 
-consent = st.checkbox(
-    "Я подтверждаю, что являюсь законным представителем и даю согласие."
-)
+consent = st.checkbox("Я подтверждаю согласие на обработку данных")
 
-# -------------------------------------------------
+# ==================================
 # ANALYZE
-# -------------------------------------------------
+# ==================================
 if st.button("Анализировать"):
-    if not consent or not back_photo:
-        st.error("Необходимо загрузить фото и подтвердить согласие.")
-        st.stop()
-
-    files = {
-        "back_photo": (
-            back_photo.name,
-            back_photo.getvalue(),
-            back_photo.type,
-        )
-    }
-
-    if side_photo:
-        files["side_photo"] = (
-            side_photo.name,
-            side_photo.getvalue(),
-            side_photo.type,
-        )
-
-    with st.spinner("Выполняется анализ..."):
-        res = requests.post(
-            f"{API_URL}/analyze",
-            params={"user_id": st.session_state["user_id"]},
-            files=files,
-            timeout=120,
-        )
-
-    if res.status_code != 200:
-        st.error(res.text)
-        st.stop()
-
-    data = res.json()
-
-    st.subheader("📌 Результат")
-    st.write("**Общий риск:**", data["overall_risk"].upper())
-
-    st.markdown("### 🧠 Пояснение")
-    for line in data["explanation"]:
-        st.write("-", line)
-
-# -------------------------------------------------
-# HISTORY (STEP 6.6)
-# -------------------------------------------------
-st.markdown("---")
-st.subheader("📊 История проверок")
-
-res = requests.get(f"{API_URL}/history/{st.session_state['user_id']}")
-if res.status_code == 200:
-    history = res.json()
-    if not history:
-        st.info("История пока пуста.")
+    if not consent:
+        st.error("Необходимо подтвердить согласие")
+    elif not back_photo:
+        st.error("Загрузите фото со спины")
     else:
-        for h in history:
-            st.markdown(
-                f"""
-**Дата:** {h["date"]}  
-**Общий риск:** {h["overall_risk"]}  
----
-"""
+        files = {
+            "back_photo": (
+                back_photo.name,
+                back_photo.getvalue(),
+                back_photo.type,
+            )
+        }
+
+        if side_photo:
+            files["side_photo"] = (
+                side_photo.name,
+                side_photo.getvalue(),
+                side_photo.type,
             )
 
-# -------------------------------------------------
-# DOCTOR MODE (STEP 6.7)
-# -------------------------------------------------
+        try:
+            with st.spinner("Анализ выполняется..."):
+                res = requests.post(
+                    f"{BACKEND_URL}/analyze",
+                    params={"user_id": st.session_state.user_id},
+                    files=files,
+                    timeout=120,
+                )
+
+            if res.status_code != 200:
+                st.error("Ошибка анализа")
+                st.code(res.text)
+            else:
+                data = res.json()
+
+                st.subheader("📊 Результаты")
+
+                st.write("**Фронтальный риск:**", data["frontal_risk"])
+                st.write("**Сагиттальный риск:**", data["sagittal_risk"])
+                st.write("**Общий риск:**", data["overall_risk"])
+
+                st.markdown("### 🧠 Пояснения")
+                for line in data["explanation"]:
+                    st.write(f"- {line}")
+
+        except Exception as e:
+            st.error(f"Ошибка соединения: {e}")
+
+# ==================================
+# HISTORY
+# ==================================
 st.markdown("---")
-if st.checkbox("👨‍⚕️ Войти как врач (demo)"):
-    st.session_state["role"] = "doctor"
+st.subheader("📚 История проверок")
 
-if st.session_state.get("role") == "doctor":
-    st.subheader("👨‍⚕️ Панель врача (только чтение)")
-    res = requests.get(f"{API_URL}/doctor/screenings")
+try:
+    res = requests.get(
+        f"{BACKEND_URL}/history/{st.session_state.user_id}",
+        timeout=10,
+    )
+
     if res.status_code == 200:
-        for r in res.json():
-            st.markdown(
-                f"""
-**Дата:** {r["date"]}  
-**Риск:** {r["overall_risk"]}  
-**User:** {r["user_id"][:8]}…
----
-"""
-            )
+        history = res.json()
+        if not history:
+            st.info("История пока пуста")
+        else:
+            for h in history:
+                st.markdown(
+                    f"""
+                    **Дата:** {h["date"]}  
+                    **Общий риск:** {h["overall_risk"]}  
+                    ---
+                    """
+                )
+    else:
+        st.warning("Не удалось загрузить историю")
+
+except Exception:
+    st.warning("Сервер недоступен")
+
+# ==================================
+# LOGOUT
+# ==================================
+st.markdown("---")
+if st.button("🚪 Выйти"):
+    st.session_state.clear()
+    st.rerun()
