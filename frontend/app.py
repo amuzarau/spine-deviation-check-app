@@ -1,10 +1,11 @@
 import requests
 import streamlit as st
+import os
 
 # ==================================
 # CONFIG
 # ==================================
-BACKEND_URL = "http://localhost:8000"  # поменять при деплое
+BACKEND_URL = os.getenv("BACKEND_URL", st.secrets["BACKEND_URL"])
 
 st.set_page_config(
     page_title="Проверка формы позвоночника",
