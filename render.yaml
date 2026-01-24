@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: spine-deviation-check-app
+    env: python
+    plan: free
+    pythonVersion: 3.11.9
