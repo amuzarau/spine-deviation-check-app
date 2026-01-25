@@ -1,13 +1,12 @@
 import cv2
 import numpy as np
 
-import mediapipe as mp
+from mediapipe.python.solutions.pose import Pose, PoseLandmark
 
 
 # -------------------------
-# MediaPipe Pose
+# MediaPipe Pose (STABLE)
 # -------------------------
-mp_pose = mp.solutions.pose
 
 # Прогрев модели (ускоряет первый запрос)
 _pose_warmup = Pose(
@@ -40,10 +39,10 @@ def analyze_back_photo(image_bytes: bytes) -> dict:
 
     lm = result.pose_landmarks.landmark
 
-    ls = lm[mp_pose.PoseLandmark.LEFT_SHOULDER]
-    rs = lm[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-    lh = lm[mp_pose.PoseLandmark.LEFT_HIP]
-    rh = lm[mp_pose.PoseLandmark.RIGHT_HIP]
+    ls = lm[PoseLandmark.LEFT_SHOULDER]
+    rs = lm[PoseLandmark.RIGHT_SHOULDER]
+    lh = lm[PoseLandmark.LEFT_HIP]
+    rh = lm[PoseLandmark.RIGHT_HIP]
 
     shoulder_diff = abs(ls.y - rs.y)
     hip_diff = abs(lh.y - rh.y)
@@ -83,9 +82,9 @@ def analyze_side_photo(image_bytes: bytes) -> dict:
 
     lm = result.pose_landmarks.landmark
 
-    nose = lm[mp_pose.PoseLandmark.NOSE]
-    shoulder = lm[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-    ankle = lm[mp_pose.PoseLandmark.RIGHT_ANKLE]
+    nose = lm[PoseLandmark.NOSE]
+    shoulder = lm[PoseLandmark.RIGHT_SHOULDER]
+    ankle = lm[PoseLandmark.RIGHT_ANKLE]
 
     forward_head = abs(nose.x - shoulder.x)
     trunk_lean = abs(shoulder.x - ankle.x)
