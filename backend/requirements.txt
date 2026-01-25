@@ -4,6 +4,7 @@ sqlalchemy
 psycopg2-binary
 pydantic
 python-dotenv
-mediapipe==0.10.32
+mediapipe==0.10.14
+
 
 

@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
-
-from mediapipe.python.solutions.pose import Pose, PoseLandmark
+import mediapipe as mp
 
 
 # -------------------------
 # MediaPipe Pose (STABLE)
 # -------------------------
+mp_pose = mp.solutions.pose
 
 # Прогрев модели (ускоряет первый запрос)
-_pose_warmup = Pose(
+_pose_warmup = mp_pose.Pose(
     static_image_mode=True,
     model_complexity=0,
     enable_segmentation=False,
