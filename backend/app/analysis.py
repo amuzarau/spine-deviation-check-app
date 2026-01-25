@@ -1,16 +1,17 @@
 import cv2
 import numpy as np
 
-# ⬇️ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
-from mediapipe import solutions as mp_solutions
+# ONLY WORKING IMPORT IN PYTHON 3.13 + RENDER
+from mediapipe.python import solutions as mp_solutions
 
 
 # -------------------------
-# MediaPipe Pose init
+# MediaPipe Pose
 # -------------------------
 mp_pose = mp_solutions.pose
 
-# Warm-up MediaPipe (один раз при старте сервера)
+
+# Один прогревочный инстанс (ускоряет первый запрос)
 _pose_warmup = mp_pose.Pose(
     static_image_mode=True,
     model_complexity=0,
@@ -23,7 +24,7 @@ def _decode_image(image_bytes: bytes):
     arr = np.frombuffer(image_bytes, dtype=np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
-        raise ValueError("Не удалось декодировать изображение.")
+        raise ValueError("Не удалось декодировать изображение")
     return img
 
 
@@ -32,12 +33,12 @@ def _decode_image(image_bytes: bytes):
 # =========================
 def analyze_back_photo(image_bytes: bytes) -> dict:
     image = _decode_image(image_bytes)
-
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
     result = _pose_warmup.process(rgb)
 
     if not result.pose_landmarks:
-        raise ValueError("Не удалось обнаружить контуры тела на фото со спины.")
+        raise ValueError("Контуры тела не обнаружены (вид со спины)")
 
     lm = result.pose_landmarks.landmark
 
@@ -51,11 +52,11 @@ def analyze_back_photo(image_bytes: bytes) -> dict:
 
     explanation = []
     if shoulder_diff > 0.04:
-        explanation.append("Обнаружена асимметрия плеч (вид со спины).")
+        explanation.append("Обнаружена асимметрия плеч")
     if hip_diff > 0.04:
-        explanation.append("Обнаружена асимметрия таза (вид со спины).")
+        explanation.append("Обнаружена асимметрия таза")
     if not explanation:
-        explanation.append("Значимых асимметрий со спины не обнаружено.")
+        explanation.append("Значимых асимметрий не обнаружено")
 
     return {
         "shoulder_diff": round(float(shoulder_diff), 3),
@@ -69,7 +70,6 @@ def analyze_back_photo(image_bytes: bytes) -> dict:
 # =========================
 def analyze_side_photo(image_bytes: bytes) -> dict:
     image = _decode_image(image_bytes)
-
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     with mp_pose.Pose(
@@ -81,13 +81,12 @@ def analyze_side_photo(image_bytes: bytes) -> dict:
         result = pose.process(rgb)
 
     if not result.pose_landmarks:
-        raise ValueError("Не удалось обнаружить контуры тела на фото сбоку.")
+        raise ValueError("Контуры тела не обнаружены (вид сбоку)")
 
     lm = result.pose_landmarks.landmark
 
     nose = lm[mp_pose.PoseLandmark.NOSE]
     shoulder = lm[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-    hip = lm[mp_pose.PoseLandmark.RIGHT_HIP]
     ankle = lm[mp_pose.PoseLandmark.RIGHT_ANKLE]
 
     forward_head = abs(nose.x - shoulder.x)
@@ -95,13 +94,11 @@ def analyze_side_photo(image_bytes: bytes) -> dict:
 
     explanation = []
     if forward_head > 0.06:
-        explanation.append("Обнаружено выдвижение головы вперёд (вид сбоку).")
+        explanation.append("Выдвижение головы вперёд")
     if trunk_lean > 0.06:
-        explanation.append(
-            "Обнаружено отклонение корпуса вперёд или назад (вид сбоку)."
-        )
+        explanation.append("Отклонение корпуса")
     if not explanation:
-        explanation.append("Значимых отклонений осанки сбоку не обнаружено.")
+        explanation.append("Значимых отклонений не обнаружено")
 
     return {
         "forward_head": round(float(forward_head), 3),
