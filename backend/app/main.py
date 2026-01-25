@@ -2,9 +2,9 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from typing import Optional
 import uuid
 from pydantic import BaseModel
-from backend.app.db import SessionLocal
-from backend.app.models import Screening, User
-from backend.app.analysis import analyze_back_photo, analyze_side_photo
+from app.db import SessionLocal
+from app.models import Screening, User
+from app.analysis import analyze_back_photo, analyze_side_photo
 
 app = FastAPI(
     title="Spine Deviation Check API",
