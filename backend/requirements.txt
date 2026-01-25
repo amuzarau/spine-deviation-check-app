@@ -6,6 +6,8 @@ pydantic
 python-dotenv
 mediapipe==0.10.14
 python-multipart==0.0.9
+alembic
+
 
 
 
