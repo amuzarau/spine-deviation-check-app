@@ -61,7 +61,7 @@ if not st.session_state.logged_in:
                 res = requests.post(
                     f"{BACKEND_URL}/auth/anonymous",
                     json={"email": email},
-                    timeout=10,
+                    timeout=30,
                 )
 
                 if res.status_code == 200:
@@ -185,7 +185,7 @@ st.subheader("📚 История проверок")
 try:
     res = requests.get(
         f"{BACKEND_URL}/history/{st.session_state.user_id}",
-        timeout=10,
+        timeout=30,
     )
 
     if res.status_code == 200:
