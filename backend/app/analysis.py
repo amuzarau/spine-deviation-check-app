@@ -1,14 +1,16 @@
 import cv2
 import numpy as np
-import mediapipe as mp
+
+from mediapipe.python.solutions import pose as mp_pose
+
 
 # -------------------------
 # MediaPipe Pose
 # -------------------------
-mp_pose = mp.solutions.pose
+Pose = mp_pose.Pose  # <-- ВАЖНО: отдельное имя
 
 # Прогрев модели (ускоряет первый запрос)
-_pose_warmup = mp_pose.Pose(
+_pose_warmup = Pose(
     static_image_mode=True,
     model_complexity=0,
     enable_segmentation=False,
@@ -68,7 +70,7 @@ def analyze_side_photo(image_bytes: bytes) -> dict:
     image = _decode_image(image_bytes)
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    with mp_pose.Pose(
+    with Pose(
         static_image_mode=True,
         model_complexity=1,
         enable_segmentation=False,
