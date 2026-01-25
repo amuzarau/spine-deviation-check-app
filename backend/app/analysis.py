@@ -1,15 +1,22 @@
 import cv2
 import numpy as np
-import mediapipe as mp
 
-# define mp_pose FIRST
-mp_pose = mp.solutions.pose
+# ⬇️ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
+from mediapipe import solutions as mp_solutions
 
-# Warm-up MediaPipe (runs once on server start)
 
-_pose_warmup = mp_pose.Pose(static_image_mode=True, model_complexity=0)
+# -------------------------
+# MediaPipe Pose init
+# -------------------------
+mp_pose = mp_solutions.pose
 
-mp_pose = mp.solutions.pose
+# Warm-up MediaPipe (один раз при старте сервера)
+_pose_warmup = mp_pose.Pose(
+    static_image_mode=True,
+    model_complexity=0,
+    enable_segmentation=False,
+    min_detection_confidence=0.5,
+)
 
 
 def _decode_image(image_bytes: bytes):
@@ -20,13 +27,13 @@ def _decode_image(image_bytes: bytes):
     return img
 
 
-# ---------- BACK VIEW (FRONTAL PLANE) ----------
+# =========================
+# BACK VIEW (FRONTAL PLANE)
+# =========================
 def analyze_back_photo(image_bytes: bytes) -> dict:
     image = _decode_image(image_bytes)
-    h, w = image.shape[:2]
 
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
     result = _pose_warmup.process(rgb)
 
     if not result.pose_landmarks:
@@ -57,14 +64,20 @@ def analyze_back_photo(image_bytes: bytes) -> dict:
     }
 
 
-# ---------- SIDE VIEW (SAGITTAL PLANE) ----------
+# =========================
+# SIDE VIEW (SAGITTAL PLANE)
+# =========================
 def analyze_side_photo(image_bytes: bytes) -> dict:
     image = _decode_image(image_bytes)
-    h, w = image.shape[:2]
 
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    with mp_pose.Pose(static_image_mode=True) as pose:
+    with mp_pose.Pose(
+        static_image_mode=True,
+        model_complexity=1,
+        enable_segmentation=False,
+        min_detection_confidence=0.5,
+    ) as pose:
         result = pose.process(rgb)
 
     if not result.pose_landmarks:
@@ -77,10 +90,7 @@ def analyze_side_photo(image_bytes: bytes) -> dict:
     hip = lm[mp_pose.PoseLandmark.RIGHT_HIP]
     ankle = lm[mp_pose.PoseLandmark.RIGHT_ANKLE]
 
-    # Forward head posture (nose vs shoulder vertical)
     forward_head = abs(nose.x - shoulder.x)
-
-    # Trunk inclination (shoulder vs ankle)
     trunk_lean = abs(shoulder.x - ankle.x)
 
     explanation = []
