@@ -1,11 +1,9 @@
 fastapi==0.115.6
 uvicorn==0.30.6
-
 sqlalchemy
 psycopg2-binary
 pydantic
 python-dotenv
-
 mediapipe==0.10.32
 
 

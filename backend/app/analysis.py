@@ -1,17 +1,13 @@
 import cv2
 import numpy as np
-
-# ONLY WORKING IMPORT IN PYTHON 3.13 + RENDER
-from mediapipe.python import solutions as mp_solutions
-
+import mediapipe as mp
 
 # -------------------------
 # MediaPipe Pose
 # -------------------------
-mp_pose = mp_solutions.pose
+mp_pose = mp.solutions.pose
 
-
-# Один прогревочный инстанс (ускоряет первый запрос)
+# Прогрев модели (ускоряет первый запрос)
 _pose_warmup = mp_pose.Pose(
     static_image_mode=True,
     model_complexity=0,
