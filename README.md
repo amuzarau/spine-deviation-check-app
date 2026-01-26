@@ -69,6 +69,7 @@ flowchart TD
     Request --> Result
 ```
 🧠 Backend (FastAPI)
+```mermaid
 flowchart TD
     API["FastAPI API"]
     Analysis["analysis.py<br/>OpenCV + MediaPipe"]
@@ -78,8 +79,10 @@ flowchart TD
     API --> Analysis
     Analysis --> Logic
     Logic --> DBLayer
+```
 
 🗄️ Database (PostgreSQL / Supabase)
+```mermaid
 erDiagram
     USERS ||--o{ SCREENINGS : has
 
@@ -100,8 +103,10 @@ erDiagram
         jsonb explanation
         timestamp created_at
     }
+```
 
 🔄 Flow работы приложения
+```mermaid
 sequenceDiagram
     participant U as User
     participant F as Streamlit
@@ -116,6 +121,7 @@ sequenceDiagram
     B->>D: Сохранение результата
     B->>F: Ответ (JSON)
     F->>U: Отображение результата
+```
 
 🛠️ Технологический стек
 🐍 Backend
