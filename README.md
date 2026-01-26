@@ -53,5 +53,5 @@ flowchart LR
     User --> Frontend
     Frontend --> Backend
     Backend --> DB
-...
+
 ```
