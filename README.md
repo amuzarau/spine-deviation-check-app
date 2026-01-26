@@ -48,3 +48,4 @@ flowchart LR
     User --> Frontend
     Frontend -->|HTTP (REST)| Backend
     Backend -->|SQLAlchemy| DB
+```
