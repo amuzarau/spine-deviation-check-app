@@ -37,7 +37,7 @@
 - 🗄️ **Database (PostgreSQL):**  
   Supabase
 
-```mermaid
+
 
 ---
 
