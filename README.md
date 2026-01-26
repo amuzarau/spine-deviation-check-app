@@ -59,8 +59,10 @@ flowchart LR
 
 ---
 
-🧩 Архитектура по компонентам
-🎨 Frontend (Streamlit)
+##🧩 Архитектура по компонентам
+
+###🎨 Frontend (Streamlit)
+
 ```mermaid
 flowchart TD
     UI["Streamlit UI"]
@@ -72,7 +74,9 @@ flowchart TD
     Upload --> Request
     Request --> Result
 ```
-🧠 Backend (FastAPI)
+
+###🧠 Backend (FastAPI)
+
 ```mermaid
 flowchart TD
     API["FastAPI API"]
@@ -84,7 +88,9 @@ flowchart TD
     Analysis --> Logic
     Logic --> DBLayer
 ```
-🗄️ Database (PostgreSQL / Supabase)
+
+###🗄️ Database (PostgreSQL / Supabase)
+
 ```mermaid
 erDiagram
     USERS ||--o{ SCREENINGS : has
