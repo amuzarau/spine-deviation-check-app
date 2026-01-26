@@ -293,7 +293,7 @@ React-frontend;
 Андрей Музарев
 Python-разработчик / STEAM-педагог
 
-GitHub: https://github.com/amuzarau
+GitHub: https://github.com/amuzarau 
 
 Website: https://andreimuzarau.com/
 
