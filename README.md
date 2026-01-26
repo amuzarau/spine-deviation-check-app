@@ -59,9 +59,9 @@ flowchart LR
 
 ---
 
-🧩 Архитектура по компонентам
+🧩 **Архитектура по компонентам**
 
-🎨 Frontend (Streamlit)
+🎨 **Frontend (Streamlit)**
 
 ```mermaid
 flowchart TD
@@ -75,7 +75,7 @@ flowchart TD
     Request --> Result
 ```
 
-🧠 Backend (FastAPI / Render)
+🧠 **Backend (FastAPI / Render)**
 
 ```mermaid
 flowchart TD
@@ -89,7 +89,7 @@ flowchart TD
     Logic --> DBLayer
 ```
 
-🗄️ Database (PostgreSQL / Supabase)
+🗄️ **Database (PostgreSQL / Supabase)**
 
 ```mermaid
 erDiagram
@@ -115,7 +115,7 @@ erDiagram
 ```
 ---
 
-🔄 Flow работы приложения
+🔄 **Flow работы приложения**
 ```mermaid
 sequenceDiagram
     participant U as User
