@@ -55,8 +55,8 @@ flowchart LR
     User --> Frontend
     Frontend --> Backend
     Backend --> DB
-
 ```
+
 ---
 
 🧩 Архитектура по компонентам
