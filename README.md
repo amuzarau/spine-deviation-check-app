@@ -260,6 +260,7 @@ CNN / Vision Transformers;
 регрессия углов позвоночника;
 
 классификация степени риска.
+
 ---
 
 🧩 **Возможные дополнительные фичи**
@@ -297,7 +298,7 @@ React-frontend;
 👨‍💻 **Автор**
 
 Андрей Музарев
-Python-разработчик / STEAM-педагог
+aspiring ML-engineer / STEAM-педагог
 
 GitHub: https://github.com/amuzarau 
 
