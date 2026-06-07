@@ -301,8 +301,7 @@ React-frontend;
 👨‍💻 **Автор**
 
 **Андрей Музарев** 
-
-aspiring ML-engineer / STEAM-педагог
+ML-инженер / STEAM-педагог
 
 GitHub: https://github.com/amuzarau 
 
