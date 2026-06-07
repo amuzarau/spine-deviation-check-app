@@ -141,37 +141,37 @@ sequenceDiagram
 
 🐍 **Backend**
 
-Python 3.11
+**Python 3.11**
 
-FastAPI — REST API
+**FastAPI — REST API**
 
-OpenCV — обработка изображений
+**OpenCV — обработка изображений**
 
-MediaPipe Pose — детекция ключевых точек тела
+**MediaPipe Pose** — детекция ключевых точек тела
 
-SQLAlchemy — ORM
+**SQLAlchemy** — ORM
 
-Alembic — миграции БД
+**Alembic** — миграции БД
 
-Docker — production-деплой
+**Docker** — production-деплой
 
 ---
 
 🎨 **Frontend**
 
-Streamlit
+**Streamlit**
 
-HTTP-интеграция с backend
+**HTTP-интеграция с backend**
 
-Responsive UI
+**Responsive UI**
 
 ---
 
 🗄️ **Database**
 
-PostgreSQL
+**PostgreSQL**
 
-Supabase (managed cloud DB)
+**Supabase** (managed cloud DB)
 
 ---
 
