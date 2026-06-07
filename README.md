@@ -28,14 +28,17 @@
 
 ## 🌐 Онлайн-доступ
 
-- 🎨 **Frontend (Streamlit):**  
+- 🎨 **Фронтенд (Streamlit):**  
   https://spine-deviation-check.streamlit.app/
 
-- 🧠 **Backend API (FastAPI):**  
-  развернут в облаке (Render)
+- 🧠 **Бэкенд API (FastAPI):**  
+  Развернут в облаке (Render)
 
-- 🗄️ **Database (PostgreSQL):**  
+- 🗄️ **База данных (PostgreSQL):**  
   Supabase
+
+- 📷 **Образцы фотографий для проверки приложения:**  
+  [Открыть папку sample_images](https://github.com/amuzarau/spine-deviation-check-app/tree/main/sample_images)
 
 
 
